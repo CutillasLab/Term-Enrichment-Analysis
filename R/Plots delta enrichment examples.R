@@ -24,8 +24,9 @@ rownames(df.drug.info) <- gsub("(",".",rownames(df.drug.info),fixed = T)
 rownames(df.drug.info) <- gsub(")",".",rownames(df.drug.info),fixed = T)
 ###########################################################################
 
-## Load resutls of ontology analysis
-f <- "Supplementary Table X Systematic ontology analysis of EMDRs.xlsx"
+## Load resutls of ontology analysis ### Input is Suppl Dataset 5
+
+f <- "https://www.dropbox.com/s/odbxlv7s5tw8627/Suppl%20Dataset%205%20Systematic%20ontology%20analysis%20of%20EMDRs.xlsx?dl=1"
 df.res.phospho <- data.frame(readxl::read_excel(f,"Resistance Phospho AML" ))
 df.sen.phospho <- data.frame(readxl::read_excel(f,"Sensitivity Phospho AML" ))
 df.res.protein <- data.frame(readxl::read_excel(f,"Resistance Protein AML" ))
@@ -96,7 +97,7 @@ for (data.in in all.data.in ){
     df.sim.all <- rbind.data.frame(df.sim.all,df.sim)
   }
   i <- i+1
-  write.csv(df.sim.all,file = paste("Suppl dataset x Similarity indeces",dat.in,".csv"))
+  write.csv(df.sim.all,file = paste("Suppl dataset 6 Similarity indeces",dat.in,".csv"))
 }
 
 # get similarity indeces for just pdts
