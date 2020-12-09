@@ -104,6 +104,10 @@ plot.dendo <- function(df.s,input.data="",plot.legend=TRUE){
   rownames(df.sim.scores) <- df.sim.scores$drug.target
   df.sim.scores[is.na(df.sim.scores)] <- 0
   df.sim.scores <-  df.sim.scores[,2:ncol(df.sim.scores)]
+
+  drugs <- rownames(df.sim.scores)
+  mycols <- character()
+  shapes <- character()
   r <- 1
   for (drug in drugs) {
     mycols[r]<- df.drug.info[df.drug.info$drug.target==drug,"mycols"]# $Target.pathway[r]
@@ -153,6 +157,45 @@ plot.similarity.score.for.drug <- function(drug){
     theme_classic()+coord_flip()
   return(ps3)
 }
+
+plot.similarity.score.for.drug.2 <- function(drug){
+  df.s <- df.sim[grep(drug,df.sim$drug1),]
+  df.s$scaled.similarity <- scale(df.s$similarity)
+  
+  
+  mm <- median(df.s$scaled.similarity)
+  ss <- sd(df.s$scaled.similarity)
+  
+  #df.ss <- rbind.data.frame(  df.s1[1:10,],df.s2[1:10,])
+  #head(df.ss[,1:10],n=20)
+  df.s$pvalue <- 1
+  for (i in 1:nrow(df.s)){
+  res <- t.test(df.s$scaled.similarity, mu = df.s$scaled.similarity[i])
+  df.s$pvalue[i] <- res$p.value
+  }
+  df.s1 <- df.s[order(-df.s$similarity),]
+  df.s2 <- df.s[order(df.s$similarity),]
+  ps3 <- ggplot(df.s,aes(x=scaled.similarity,y=drug.2))+
+    geom_point(aes(size=-log10(pvalue), color=-log10(pvalue)))+
+    geom_text_repel(data = df.s1[1:20,], 
+                    aes(x=scaled.similarity,y=drug.2, label=drug.2,
+                        color=-log10(pvalue)),
+                    size=2.5)+
+    scale_color_gradient(high = "purple4",low="grey")+
+    
+    labs(title = paste("Similarity score for",drug))+
+    theme_classic()+
+    theme(axis.title.y=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks.y=element_blank())+
+    geom_vline(xintercept = 0, linetype=2)+
+    geom_vline(xintercept = 1, linetype=3)+
+    geom_vline(xintercept = -1, linetype=3)
+  
+  ps3
+  return(ps3)
+}
+
 ########## Onoloty and KS enrichment analysis from list of EMDRs ###############################################################
 
 Enrichment.from.list <- function(list.of.peptides,background.list,prot_db=c("edges","pdts","psite","signor","reactome","process","function","location", "kegg","nci","tf.targets.omnipath","hallmark.genes"),
